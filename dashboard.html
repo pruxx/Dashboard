@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+  <link rel="stylesheet" href="https://unpkg.com/@material-tailwind/html@latest/styles/material-tailwind.css" />
+ 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    .borrowed-icon, .returned-icon, .awaiting-icon{
+      width: 100px;
+      height: 100px;
+      background: #018f3a;
+      color: rgb(255, 255, 255); 
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;  
+      border-radius: 25%;
+      margin-top: 0.5cm;
+    }
+
+    .calendar {
+      font-family: 'Helvetica', sans-serif;
+      text-align: center;
+      color: #333;
+    }
+
+    .month {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: black;
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      
+    }
+
+    .day {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e0e0e0; 
+      border-radius: 8px; 
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .current-day {
+      background-color: #018f3a;
+      color: #fff;
+      font-weight: bold;
+      border-color: #018f3a; 
+    }
+    .day:hover {
+      background-color: #f0f0f0; 
+    }
+
+    /* Additional Styles for Days */
+    .day-name {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: black;
+    }
+  </style>
+  
+  <title>Home</title>
+</head>
+
+<body>
+  <div class="min-h-screen w-full bg-[#F6FFF1]">
+    <!-- START NAVBAR -->
+    <div class="antialiased bg-green-800 dark-mode:bg-gray-900 w-full">
+      <div class="mx-20">
+        <div class="flex w-full text-gray-700 bg--green-800 dark-mode:text-gray-200 dark-mode:bg-gray-800">
+          <div x-data="{ open: true }"
+            class="flex w-full flex-col bg-green-800 text-white px-4 md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
+            <div class="h-10 w-10">
+              <img src="../Login/CvSU logo.png" alt="">
+            </div>
+            <div class="flex flex-row items-center justify-between p-4">
+              <a href="#"
+                class="text-lg text-white font-semibold tracking-widest uppercase rounded-lg focus:outline-none focus:shadow-outline">
+                Library Borrowing and Returning System
+              </a>
+              <button class="rounded-lg md:hidden focus:outline-none focus:shadow-outline" @click="open = !open">
+                <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+                  <path x-show="!open" fill-rule="evenodd"
+                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
+                    clip-rule="evenodd"></path>
+                  <path x-show="open" fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
+            <nav :class="{'flex': open, 'hidden': !open}"
+              class="flex-col flex-grow hidden pb-4 md:pb-0 md:flex md:justify-end md:flex-row">
+              <a class="px-4 py-2 mt-2 text-sm font-semibold bg-gray-200 text-gray-900 rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                href="dashboard.html">Dashboard</a>
+              <a class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                href="book-list.html">List of Books</a>
+              <a class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                href="../Borrowing History/borrowing history.html">Borrowing History</a>
+              <a class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                href="../Library Patron/library patrons.html">Library Patrons</a>
+              <div
+                class="ml-4 hover:text-gray-900 focus:text-gray-900 rounded-md hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline">
+                <div class="flex gap-2 p-1">
+                  <img alt="tania andrew"
+                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=1480&amp;q=80"
+                    class="relative inline-block h-7 w-7 cursor-pointer rounded-full object-cover object-center"
+                    data-popover-target="profile-menu" />
+                  <div class="flex justify-center items-center cursor-pointer">
+                    <p class="font-medium text-md" data-popover-target="profile-menu">Librarian Name
+                    </p>
+                  </div>
+                </div>
+                <ul role="menu" data-popover="profile-menu" data-popover-placement="bottom"
+                  class="absolute z-10 flex min-w-[180px] flex-col gap-2 overflow-auto rounded-md border border-blue-gray-50 bg-white p-1 font-sans text-sm font-normal text-blue-gray-500 shadow-lg shadow-blue-gray-500/10 focus:outline-none">
+                  <button tabIndex="-1" role="menuitem"
+                    class="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pt-[9px] pb-1 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" aria-hidden="true" class="h-4 w-4">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
+                      </path>
+                    </svg>
+                    <p class="block font-sans text-sm font-normal leading-normal text-inherit antialiased">
+                      Account Setting
+                    </p>
+                  </button>
+                  <hr class="border-blue-gray-50" tabindex="-1" role="menuitem" />
+                  <button tabIndex="-1" role="menuitem"
+                    class="flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 pb-1 text-start leading-tight outline-none transition-all hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" aria-hidden="true" class="h-4 w-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9">
+                      </path>
+                    </svg>
+                    <a href="../Login/login-page.html">
+                      <p class="block font-sans text-sm font-normal leading-normal text-inherit antialiased">
+                        Sign Out
+                      </p>
+                    </a>
+                  </button>
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--  Start total chart Dashboard-->
+    <div class="flex">
+    <div class="flex ml-80 flex-col items-center">
+      <p class="borrowed-icon">
+        <ion-icon name="book-sharp" size="large"></ion-icon>
+      </p>
+      <p class="mt-2"><b>Borrowed</b></p>
+      <p class="mt-2 text-xl font-sans"><b>3,257</b></p>
+      
+    </div>
+
+    <div class="flex ml-80 flex-col items-center">
+      <p class="returned-icon">
+        <ion-icon name="checkmark-circle-sharp" size="large"></ion-icon>
+      </p>
+      <p class="mt-2"><b>Returned</b></p>
+      <p class="mt-2 text-xl font-sans"><b>1,249</b></p>
+    </div>
+
+    <div class="flex ml-80 flex-col items-center">
+      <p class="awaiting-icon">
+        <ion-icon name="alert-circle-sharp" size="large"></ion-icon>
+      </p>
+      <p class="mt-2"><b>Awaiting</b></p>
+      <p class="mt-2 text-xl font-sans"><b>2,008</b></p>
+    </div>
+  </div>
+    <!--  Start  percentage chart Dashboard-->
+    <div class="flex mt-8 justify-center">
+      <!-- Left Container for Charts -->
+      <div class="flex-shrink-0 w-3/4">
+        <!-- Single Card for Charts -->
+        <div class="bg-white p-4 border rounded shadow text-center">
+          <!-- First Percentage Chart -->
+          <div class="flex items-center justify-center mb-4">
+            <div class="w-40 h-40 flex-shrink-0">
+              <canvas id="percentageChart1"></canvas>
+            </div>
+            <div class="ml-2">
+              <p><b>Percentage of borrowed books</b></p>
+            </div>
+          </div>
+
+          <!-- Second Percentage Chart -->
+          <div class="flex items-center justify-center mb-4">
+            <div class="w-40 h-40 flex-shrink-0">
+              <canvas id="percentageChart2"></canvas>
+            </div>
+            <div class="ml-2">
+              <p><b>Percentage of returned books</b></p>
+            </div>
+          </div>
+
+          <!-- Third Percentage Chart -->
+          <div class="flex items-center justify-center">
+            <div class="w-40 h-40 flex-shrink-0">
+              <canvas id="percentageChart3"></canvas>
+            </div>
+            <div class="ml-2">
+              <p><b>Percentage of awaiting books</b></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <!-- Right Container for Other Content -->
+      <div class="ml-8 w-1/2">
+        <!-- Card for Auto Slideshow -->
+        <div x-data="{ activeSlide: 0, slides: ['pic1.jpg', 'pic2.jpg', 'pic3.jpg'] }"
+          x-init="() => { setInterval(() => { activeSlide = (activeSlide + 1) % slides.length; }, 3000); }"
+          class="relative bg-white p-4 border rounded shadow overflow-hidden">
+          <!-- Slideshow Content -->
+          <img x-bind:src="slides[activeSlide]" alt="Slide Image" class="w-full h-auto rounded">
+
+          <!-- Queue Dots -->
+          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <template x-for="(slide, index) in slides" :key="index">
+              <div x-on:click="activeSlide = index"
+                class="w-4 h-4 rounded-full cursor-pointer transition duration-300 transform hover:scale-125 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500"
+                :class="{ 'bg-blue-500': activeSlide === index, 'bg-gray-300': activeSlide !== index }"></div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Card for Mini Calendar -->
+        <div class="mt-1 p-4 border rounded shadow bg-white">
+          <div class="calendar">
+            <div class="month" id="month"></div>
+            <div class="days" id="days"></div>
+          </div>
+        </div>
+      </div>
+
+    <!--  Script for icon-->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+</body>
+
+<!-- from cdn -->
+<script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/popover.js"></script>
+
+<!--Script for Charts percentage-->
+<script>
+  // Sample data for the percentage charts
+  const dataPercentage1 = {
+    labels: ["Borrowed", "Remaining"],
+    datasets: [
+      {
+        data: [75, 25],
+        backgroundColor: ["#3498db", "#ecf0f1"],
+      },
+    ],
+  };
+
+  const configPercentage1 = {
+    type: "doughnut",
+    data: dataPercentage1,
+    options: {},
+  };
+
+  var chartPercentage1 = new Chart(document.getElementById("percentageChart1"), configPercentage1);
+
+  // Repeat the same structure for the other two charts (chartPercentage2 and chartPercentage3)
+
+  // Sample data for the second percentage chart
+  const dataPercentage2 = {
+    labels: ["Returned", "Remaining"],
+    datasets: [
+      {
+        data: [50, 50],
+        backgroundColor: ["#2ecc71", "#ecf0f1"],
+      },
+    ],
+  };
+
+  const configPercentage2 = {
+    type: "doughnut",
+    data: dataPercentage2,
+    options: {},
+  };
+
+  var chartPercentage2 = new Chart(document.getElementById("percentageChart2"), configPercentage2);
+
+  // Sample data for the third percentage chart
+  const dataPercentage3 = {
+    labels: ["Awaiting", "Remaining"],
+    datasets: [
+      {
+        data: [30, 70],
+        backgroundColor: ["#e74c3c", "#ecf0f1"],
+      },
+    ],
+  };
+
+  const configPercentage3 = {
+    type: "doughnut",
+    data: dataPercentage3,
+    options: {},
+  };
+
+  var chartPercentage3 = new Chart(document.getElementById("percentageChart3"), configPercentage3);
+</script>
+
+<!-- Script for Mini Calendar -->
+<script>
+  function generateMiniCalendar() {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    const monthElement = document.getElementById('month');
+    const daysElement = document.getElementById('days');
+
+    // Display current month
+    monthElement.textContent = months[currentMonth] + ' ' + currentYear;
+
+    // Get the first day of the month
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const startingDay = firstDayOfMonth.getDay();
+
+    // Get the last day of the month
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+    const totalDays = lastDayOfMonth.getDate();
+
+    // Generate days of the month
+    daysElement.innerHTML = '';
+
+    // Add day names
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    dayNames.forEach(dayName => {
+      const dayNameElement = document.createElement('div');
+      dayNameElement.classList.add('day-name');
+      dayNameElement.textContent = dayName;
+      daysElement.appendChild(dayNameElement);
+    });
+
+    // Add empty days before the 1st day of the month
+    for (let i = 0; i < startingDay; i++) {
+      const emptyDay = document.createElement('div');
+      daysElement.appendChild(emptyDay);
+    }
+
+    // Add days of the month
+    for (let day = 1; day <= totalDays; day++) {
+      const dayElement = document.createElement('div');
+      dayElement.textContent = day;
+      dayElement.className = 'day';
+      if (today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear) {
+        dayElement.classList.add('current-day');
+      }
+      daysElement.appendChild(dayElement);
+    }
+  }
+
+  // Call the function to generate the mini calendar
+  generateMiniCalendar();
+</script>
+
+</html>
